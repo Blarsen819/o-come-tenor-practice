@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>O Come, All You Unfaithful — Tenor Practice</title>
+  
+  <!-- abcjs Styles & Library -->
+  <link rel="stylesheet" href="https://jsdelivr.net" />
+  <script src="https://jsdelivr.net"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #e2e8f0;
+      --highlight: #dbeafe;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .controls-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 1rem;
+      z-index: 100;
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .tempo-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .jump-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-left: auto;
+    }
+
+    button.jump-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    button.jump-btn:hover {
+      background: var(--highlight);
+      border-color: var(--accent);
+    }
+
+    .score-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Highlight active note during playback */
+    .abcjs-highlight {
+      fill: var(--accent) !important;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 0.75rem;
+      }
+      .jump-buttons {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>O Come, All You Unfaithful</h1>
+      <p class="subtitle">Choir Tenor Part (mm. 1–111) &bull; Arr. Heather Sorenson</p>
+    </header>
+
+    <div class="controls-card">
+      <div id="audio-controls"></div>
+
+      <div class="control-row">
+        <div class="tempo-group">
+          <label for="tempo-slider">Tempo:</label>
+          <input type="range" id="tempo-slider" min="50" max="130" value="100" />
+          <span id="tempo-value">100%</span>
+        </div>
+
+        <div class="jump-buttons" aria-label="Jump to section">
+          <button class="jump-btn" data-progress="0.18">m. 21 ("Oo")</button>
+          <button class="jump-btn" data-progress="0.42">m. 47 ("O come")</button>
+          <button class="jump-btn" data-progress="0.58">m. 65 ("He's the Lamb")</button>
+          <button class="jump-btn" data-progress="0.74">m. 82 ("So come")</button>
+          <button class="jump-btn" data-progress="0.91">m. 104 (Ending)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-card">
+      <div id="paper"></div>
+    </div>
+  </div>
+
+  <script>
+    const abcNotation = `
+X:1
+T:O Come, All You Unfaithful - Tenor (mm. 1-111)
+C:Arr. Heather Sorenson
+M:6/8
+L:1/8
+Q:3/8=56
+K:Eb
+%%MIDI program 52
+% --- Pages 3-4: Intro & Alto Solo (Tenor Tacet mm. 1-20) ---
+z6 | z6 | z6 | z6 | [M:9/8] z9 | [M:6/8] z6 | z6 | z6 |
+z6 | z6 | z6 | z6 | z6 | z6 | z6 | z6 |
+z6 | z6 | z6 | z6 |
+% --- Page 4: m. 21 (Choir Tenor enters on "Oo") ---
+"21 (Oo)" G,6- | G,6- | G,6 |
+% --- Page 5: mm. 24-31 ---
+G,6 | z3 "Oh," G,3- | G,6 | "God" G,3 "has" A,3 |
+"done." G,6 | "29 (Oo)" B,6- | B,6 | z3 "oh," (B,>C) "Christ" (B,>A,) |
+% --- Page 6: mm. 32-40 ---
+"born" G,6 | z6 | "for" (B,>C B,) A,3 | "you." G,6- |
+G,6 | z6 | z6 | z6 | z6 |
+% --- Page 7: mm. 41-52 (Unison entrance at m. 47) ---
+z6 | z6 | z6 | z6 | z6 | z6 |
+"47 O" z2 F, "come," B,3- | B,2 A, "guilt-y" G,F,"and" G, | "hid-" A,3- "ing" A,2 G, | "ones," F,3 "there" E,2 G, |
+"need" A,3 "to" B,3 | "run." C3- C2 B, |
+% --- Page 8: mm. 53-63 (Includes 1st & 2nd Endings) ---
+"done." B,6 | z3 "Christ" B,2 "is" B, | "55 born," B,6- | B,3 z2 B, |
+"Christ" C2 "is" D "born," E3- | E6 | "Christ" D2 "is" C "born" B,3 | "for" (B,3 A,3) |
+[1 "you." G,6- | G,6 :| [2 "you." B,6 |
+% --- Page 9: mm. 64-71 ("He's the Lamb") ---
+B,6 | "65 He's" z B, "the" B, "Lamb" B,3- | B,6 | "who" z B, "was" B, "slain." B,3- |
+B,6 | "Prom-" z B, "ise" B, "is" B, "peace" B,3 | z3 "for" B, "those" B, "who" B, |
+% --- Page 10: mm. 72-79 ("He's the Lamb" - Tenor Solo joins) ---
+"lieve." B,6 | "73 He's" z B, "the" B, "Lamb" B,3- | B,6 | "who" z B, "was" B, "slain." B,3- |
+B,6 | "prom-" z B, "ise" B, "is" B, "peace," B,3 | z3 "those" B, "who" B, "be-" B, |
+% --- Page 11: mm. 80-87 ("So come...") ---
+"lieve." B,6- | B,3 z3 | "82 Come." B,6 | z6 |
+"Come." B,6 | z6 | "Come," B,3 "see" B, "what" B, "your" B, | "God" C3 "has" D3 |
+% --- Page 12: mm. 88-95 ---
+"done." B,6 | z3 "Christ" B,2 "is" B, | "90 born," B,6- | B,6 |
+B,6- | B,3 "Christ" B,2 "is" B, | "born" B,3 z3 | "for" (B,3 A,3) |
+% --- Page 13: mm. 96-103 ---
+"you." G,6- | G,3 z3 | "98 (Oo)" B,6- | B,3 z3 |
+"oh," (2G,A, "Christ is" (2B,C | "born" D6 | z6 | z6 |
+% --- Page 14: mm. 104-111 (Ending) ---
+"for" G,2 A, B,2 G, | "you." F,6- | F,6 | z6 |
+z6 | z6 | z6 | z6 |]
+`;
+
+    // Cursor control to highlight active notes during playback
+    function CursorControl() {
+      this.onEvent = function(ev) {
+        const lastSelection = document.querySelectorAll("#paper .abcjs-highlight");
+        lastSelection.forEach(el => el.classList.remove("abcjs-highlight"));
+
+        if (ev && ev.elements) {
+          ev.elements.forEach(group => {
+            group.forEach(el => el.classList.add("abcjs-highlight"));
+          });
+        }
+      };
+
+      this.onFinished = function() {
+        const lastSelection = document.querySelectorAll("#paper .abcjs-highlight");
+        lastSelection.forEach(el => el.classList.remove("abcjs-highlight"));
+      };
+    }
+
+    const visualObj = ABCJS.renderAbc("paper", abcNotation, {
+      responsive: "resize",
+      add_classes: true
+    })[0];
+
+    const synthControl = new ABCJS.synth.SynthController();
+    const cursorControl = new CursorControl();
+
+    synthControl.load("#audio-controls", cursorControl, {
+      displayLoop: true,
+      displayRestart: true,
+      displayPlay: true,
+      displayProgress: true,
+      displayWarp: false
+    });
+
+    const createSynth = new ABCJS.synth.CreateSynth();
+    createSynth.init({ visualObj: visualObj }).then(() => {
+      synthControl.setTune(visualObj, false, {
+        chordsOff: true
+      });
+    }).catch(err => {
+      console.error("Audio initialization error:", err);
+    });
+
+    // Tempo slider handler
+    const tempoSlider = document.getElementById("tempo-slider");
+    const tempoValue = document.getElementById("tempo-value");
+
+    tempoSlider.addEventListener("input", (e) => {
+      const pct = parseInt(e.target.value, 10);
+      tempoValue.textContent = `${pct}%`;
+      synthControl.setWarp(pct);
+    });
+
+    // Section jump buttons
+    document.querySelectorAll(".jump-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const progress = parseFloat(btn.getAttribute("data-progress"));
+        synthControl.seek(progress);
+      });
+    });
+  </script>
+</body>
+</html>
